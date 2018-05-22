@@ -63,5 +63,11 @@ class Human:
     def play(self, board):
         return ord(input()) - 49
 
-game = Game(Human(), Human())
+class Minimax:
+    def __str__(self):
+        return "Minimax"
+    def play(self, board):
+        return 1
+
+game = Game(Human(), Minimax())
 game.play()
