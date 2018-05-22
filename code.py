@@ -22,6 +22,11 @@ class Game:
             if i < 2:
                 print('-----')
 
+    def boardInvert(self):
+        for i in range(9):
+            if self.board[i] != 2:
+                self.board[i] = 1 - self.board[i]
+
     def play(self):
 
         print(self.players[0], "X vs.", self.players[1], "O")
@@ -30,7 +35,11 @@ class Game:
             print("Turn of", self.players[self.turn], playerSymbol[self.turn])
             self.printBoard()
             time.sleep(1)
+            if self.turn == 1:
+                self.boardInvert()
             place = self.players[self.turn].play(self.board)
+            if self.turn == 1:
+                self.boardInvert()
 
             if self.board[place] != 2:
                 print("Cell is full!")
