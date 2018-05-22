@@ -1,58 +1,67 @@
 import time
 
-playerSymbol = [' ', 'X', 'O']
+playerSymbol = ['X', 'O', ' ']
 
-def printBoard(board):
-    for i in range(3):
-        for j in range(3):
-            print(playerSymbol[board[i*3+j]], end = '')
-            if j < 2:
-                print('|', end = '')
-            else:
-                print('')
-        if i < 2:
-            print('-----')
+class Game:
 
-board = [0, 0, 0,
-         0, 0, 0,
-         0, 0, 0]
+    def __init__(self, player1, player2):
+        self.players = [player1, player2]
+        self.board = [2, 2, 2,
+                      2, 2, 2,
+                      2, 2, 2]
+        self.turn = 1
+        self.winner = 2
+    def printBoard(self):
+        for i in range(3):
+            for j in range(3):
+                print(playerSymbol[self.board[i*3+j]], end = '')
+                if j < 2:
+                    print('|', end = '')
+                else:
+                    print('')
+            if i < 2:
+                print('-----')
+
+    def play(self):
+
+        print(self.players[0], "X vs.", self.players[1], "O")
+
+        for i in range(9):
+            print("Turn of", self.players[self.turn], playerSymbol[self.turn])
+            self.printBoard()
+            time.sleep(1)
+            place = self.players[self.turn].play(self.board)
+
+            if self.board[place] != 2:
+                print("Cell is full!")
+                continue
+
+            self.board[place] = self.turn
+
+            if (self.board[place%3] == self.board[place%3 + 3] and self.board[place%3] == self.board[place%3 + 6]) or\
+               (self.board[int(place/3)*3] == self.board[int(place/3)*3 + 1] and self.board[int(place/3)*3] == self.board[int(place/3)*3 + 2]) or\
+               ((place == 0 or place == 4 or place == 8) and self.board[0] == self.board[4] and self.board[0] == self.board[8]) or\
+               ((place == 2 or place == 4 or place == 6) and self.board[2] == self.board[4] and self.board[2] == self.board[6]):
+               self.winner = self.turn
+               break
+
+            self.turn = 1-self.turn
+
+        self.printResult()
+
+    def printResult(self):
+        if self.winner == 2:
+            print("Tie")
+        else:
+            self.printBoard()
+            print(self.players[self.winner], playerSymbol[self.winner], "won")
 
 
-def human():
-    return ord(input()) - 49
+class Human:
+    def __str__(self):
+        return "Human"
+    def play(self, board):
+        return ord(input()) - 49
 
-turn = 1
-
-players = ["", "human", "human"]
-
-print(players[1], "X vs.", players[2], "O")
-
-winner = 0
-
-for i in range(9):
-    print("Turn of", players[turn], playerSymbol[turn])
-    printBoard(board)
-    time.sleep(1)
-    if players[turn] == "human":
-        place = human()
-
-    if board[place]:
-        print("Cell is full!")
-        continue
-
-    board[place] = turn
-
-    if (board[place%3] == board[place%3 + 3] and board[place%3] == board[place%3 + 6]) or\
-       (board[int(place/3)*3] == board[int(place/3)*3 + 1] and board[int(place/3)*3] == board[int(place/3)*3 + 2]) or\
-       ((place == 0 or place == 4 or place == 8) and board[0] == board[4] and board[0] == board[8]) or\
-       ((place == 2 or place == 4 or place == 6) and board[2] == board[4] and board[2] == board[6]):
-       winner = turn
-       break
-
-    turn = 3-turn
-
-if winner == 0:
-    print("Tie")
-else:
-    printBoard(board)
-    print(players[winner], playerSymbol[turn], "won")
+game = Game(Human(), Human())
+game.play()
