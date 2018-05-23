@@ -1,4 +1,5 @@
 import time
+from timeit import default_timer as timer
 import random
 
 playerSymbol = ['X', 'O', ' ']
@@ -38,7 +39,9 @@ class Game:
             time.sleep(1)
             if self.turn == 1:
                 self.boardInvert()
+            startTime = timer()
             place = self.players[self.turn].play(self.board)
+            print("Time =", timer()-startTime, "Count =", self.players[self.turn].count)
             if self.turn == 1:
                 self.boardInvert()
 
@@ -65,12 +68,15 @@ class Game:
             print("Tie")
         else:
             print(self.players[self.winner], playerSymbol[self.winner], "won")
+
 class Human:
     def __str__(self):
         return "Human"
     def play(self, board):
         return ord(input()) - 49
 class Minimax:
+    def __init__(self):
+        self.count = 0
     def __str__(self):
         return "Minimax"
     def printBoard(self, board):
@@ -96,6 +102,7 @@ class Minimax:
                 return -1
         return 2
     def minimize(self, board):
+        self.count += 1
         end = self.isEnd(board)
         if end == 1:
             return -1
@@ -114,6 +121,7 @@ class Minimax:
         return mn
 
     def maximize(self, board):
+        self.count += 1
         end = self.isEnd(board)
         if end == 0:
             return 1
@@ -132,6 +140,7 @@ class Minimax:
         return mx
     def play(self, board):
         mx = -2
+        self.count = 0
         for i in range(9):
             if board[i] == 2:
                 board[i] = 0
@@ -143,6 +152,92 @@ class Minimax:
                     mxi = i
                 board[i] = 2
         return mxi
+class AlphaBeta:
+    def __init__(self):
+        self.count = 0
+    def __str__(self):
+        return "AlphaBeta"
+    def printBoard(self, board):
+        for i in range(3):
+            for j in range(3):
+                print(playerSymbol[board[i*3+j]], end = '')
+                if j < 2:
+                    print('|', end = '')
+                else:
+                    print('')
+            if i < 2:
+                print('-----')
+    def isEnd(self, board):
+        for i in range(3):
+            if board[i*3] == board[i*3+1] and board[i*3] == board[i*3+2] and board[i*3] != 2:
+                return board[i*3]
+            if board[i] == board[i+3] and board[i] == board[i+6] and board[i] != 2:
+                return board[i]
+            if ((board[4] == board[0] and board[4] == board[8]) or (board[4] == board[2] and board[4] == board[6])) and board[4] != 2:
+                return board[4]
+        for i in range(9):
+            if board[i] == 2:
+                return -1
+        return 2
+    def minimize(self, board, alpha, beta):
+        self.count += 1
+        end = self.isEnd(board)
+        if end == 1:
+            return -1
+        if end == 0:
+            return 1
+        if end == 2:
+            return 0
+        mn = 2
+        for i in range(9):
+            if board[i] == 2:
+                board[i] = 1
+                mn = min(self.maximize(board, alpha, beta), mn)
+                beta = min(mn, beta)
+                board[i] = 2
+                if beta < alpha:
+                    return beta
+                if mn == -1:
+                    return -1
+        return mn
 
-game = Game(Minimax(), Minimax())
-game.play()
+    def maximize(self, board, alpha, beta):
+        self.count += 1
+        end = self.isEnd(board)
+        if end == 0:
+            return 1
+        if end == 1:
+            return -1
+        if end == 2:
+            return 0
+        mx = -2
+        for i in range(9):
+            if board[i] == 2:
+                board[i] = 0
+                mx = max(self.minimize(board, alpha, beta), mx)
+                alpha = max(mx, alpha)
+                board[i] = 2
+                if alpha > beta:
+                    return alpha
+                if mx == 1:
+                    return 1
+        return mx
+    def play(self, board):
+        self.count = 0
+        mx = -2
+        for i in range(9):
+            if board[i] == 2:
+                board[i] = 0
+                t=self.minimize(board, -5, 5)
+                if t == mx and random.random()>0.5:
+                    mxi = i
+                if t > mx:
+                    mx = t
+                    mxi = i
+                board[i] = 2
+        return mxi
+
+
+Game(AlphaBeta(), Minimax()).play()
+print("==============================")
+Game(Minimax(), Minimax()).play()
