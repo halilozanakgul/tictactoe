@@ -41,7 +41,7 @@ class Game:
                 self.boardInvert()
             startTime = timer()
             place = self.players[self.turn].play(self.board)
-            print("Time =", timer()-startTime)
+            print("Time =", timer()-startTime, "Count =", self.players[self.turn].count)
             if self.turn == 1:
                 self.boardInvert()
 
@@ -75,6 +75,8 @@ class Human:
     def play(self, board):
         return ord(input()) - 49
 class Minimax:
+    def __init__(self):
+        self.count = 0
     def __str__(self):
         return "Minimax"
     def printBoard(self, board):
@@ -100,6 +102,7 @@ class Minimax:
                 return -1
         return 2
     def minimize(self, board):
+        self.count += 1
         end = self.isEnd(board)
         if end == 1:
             return -1
@@ -118,6 +121,7 @@ class Minimax:
         return mn
 
     def maximize(self, board):
+        self.count += 1
         end = self.isEnd(board)
         if end == 0:
             return 1
@@ -136,6 +140,7 @@ class Minimax:
         return mx
     def play(self, board):
         mx = -2
+        self.count = 0
         for i in range(9):
             if board[i] == 2:
                 board[i] = 0
@@ -148,6 +153,8 @@ class Minimax:
                 board[i] = 2
         return mxi
 class AlphaBeta:
+    def __init__(self):
+        self.count = 0
     def __str__(self):
         return "AlphaBeta"
     def printBoard(self, board):
@@ -173,6 +180,7 @@ class AlphaBeta:
                 return -1
         return 2
     def minimize(self, board, alpha, beta):
+        self.count += 1
         end = self.isEnd(board)
         if end == 1:
             return -1
@@ -194,6 +202,7 @@ class AlphaBeta:
         return mn
 
     def maximize(self, board, alpha, beta):
+        self.count += 1
         end = self.isEnd(board)
         if end == 0:
             return 1
@@ -214,6 +223,7 @@ class AlphaBeta:
                     return 1
         return mx
     def play(self, board):
+        self.count = 0
         mx = -2
         for i in range(9):
             if board[i] == 2:
@@ -229,3 +239,5 @@ class AlphaBeta:
 
 
 Game(AlphaBeta(), Minimax()).play()
+print("==============================")
+Game(Minimax(), Minimax()).play()
