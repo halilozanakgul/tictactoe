@@ -1,4 +1,5 @@
 import time
+from timeit import default_timer as timer
 import random
 
 playerSymbol = ['X', 'O', ' ']
@@ -38,7 +39,9 @@ class Game:
             time.sleep(1)
             if self.turn == 1:
                 self.boardInvert()
+            startTime = timer()
             place = self.players[self.turn].play(self.board)
+            print("Time =", timer()-startTime)
             if self.turn == 1:
                 self.boardInvert()
 
@@ -65,6 +68,7 @@ class Game:
             print("Tie")
         else:
             print(self.players[self.winner], playerSymbol[self.winner], "won")
+
 class Human:
     def __str__(self):
         return "Human"
@@ -144,5 +148,4 @@ class Minimax:
                 board[i] = 2
         return mxi
 
-game = Game(Minimax(), Minimax())
-game.play()
+Game(Minimax(), Minimax()).play()
